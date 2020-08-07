@@ -1,11 +1,6 @@
 const { Keystone } = require("@keystonejs/keystone");
 const { PasswordAuthStrategy } = require("@keystonejs/auth-password");
-const {
-  Text,
-  Checkbox,
-  Password,
-  Relationship,
-} = require("@keystonejs/fields");
+
 const { GraphQLApp } = require("@keystonejs/app-graphql");
 const { AdminUIApp } = require("@keystonejs/app-admin-ui");
 const { StaticApp } = require("@keystonejs/app-static");
@@ -13,11 +8,9 @@ const { StaticApp } = require("@keystonejs/app-static");
 const { MongooseAdapter: Adapter } = require("@keystonejs/adapter-mongoose");
 const { createItems } = require("@keystonejs/server-side-graphql-client");
 
-const TodoSchema = require("./lists/Todo.js");
-const TodoUser = require("./lists/User");
-const TodoPost = require("./lists/Post");
-const BookSchema = require("./lists/User");
-const TestSchema = require("./lists/Test");
+const UserSchema = require("./lists/User.js");
+const BookSchema = require("./lists/Book.js");
+const WriterSchema = require("./lists/Writer.js");
 
 const PROJECT_NAME = "tutorial-keystone";
 const adapterConfig = {
@@ -50,11 +43,9 @@ const keystone = new Keystone({
   // },
 });
 
-// keystone.createList("Book", BookSchema);
-keystone.createList("User", TodoUser);
-keystone.createList("Todo", TodoSchema);
-// keystone.createList("Post", TodoPost);
-keystone.createList("Test", TestSchema);
+keystone.createList("Book", BookSchema);
+keystone.createList("User", UserSchema);
+keystone.createList("Writer", WriterSchema);
 
 const authStrategy = keystone.createAuthStrategy({
   type: PasswordAuthStrategy,

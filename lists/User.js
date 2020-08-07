@@ -7,38 +7,31 @@ const {
 } = require("@keystonejs/fields");
 
 module.exports = {
+  // defaultAccess: {
+  //   list: true,
+  //   field: true,
+  //   custom: true,
+  // },
   access: {
-    // information: ({
-    //   listKey,
-    //   operation,
-    //   originalInput,
-    //   gqlName,
-    //   itemId,
-    //   itemIds,
-    // }) => {
-    //   console.log(
-    //     "list key: ",
-    //     listKey,
-    //     " operation ",
-    //     operation,
-    //     " originalInput ",
-    //     originalInput,
-    //     " gqlName ",
-    //     gqlName,
-    //     " itemId ",
-    //     itemId,
-    //     " itemIds ",
-    //     itemIds
-    //   );
-    // },
     // Only admin can create new user
-    create: ({ authentication: { item } }) => item.isAdmin,
+    create: ({ authentication: { item } }) => {
+      return item.isAdmin;
+    },
+    //Only ad,im can delete user
+    delete: ({ authentication: { item } }) => item.isAdmin,
     // 1. Only admins can read deactivated user accounts
-    read: ({ authentication: { item } }) => {
+    read: ({ authentication: { item, listKeyAuthen } }) => {
       if (item.isAdmin) {
         return {}; // Don't filter any items for admins
       }
       // Approximately; users.filter(user => user.state !== 'deactivated');
+      // state_not: 'deactivated',
+      return {
+        id: item.id,
+      };
+    },
+    update: ({ authentication: { item, listKey } }) => {
+      if (item.isAdmin) return {};
       return {
         id: item.id,
       };
@@ -49,54 +42,40 @@ module.exports = {
     address: { type: Text },
     state: {
       type: Select,
-      options: ["active", "deactivated"],
-      defaultValue: "active",
+      options: ["manager", "reader"],
+      defaultValue: "reader",
     },
-    isAdmin: { type: Checkbox, defaultValue: false },
+    isAdmin: {
+      type: Checkbox,
+      defaultValue: false,
+      access: ({ existingItem, authentication: { item } }) => {
+        return item.isAdmin || existingItem.id === item.id;
+      },
+    },
     email: {
       type: Text,
       // 2. Only authenticated users can read/update their own email, not any other user's.
       // Admins can read/update anyone's email.
-      // access: ({ existingItem, authentication: { item } }) => {
-      //   return item.isAdmin || existingItem.id === item.id;
-      // },
+      access: ({ existingItem, authentication: { item } }) => {
+        return item.isAdmin || existingItem.id === item.id;
+      },
     },
     password: {
       type: Password,
+      required: true,
       access: {
         // 3. Only admins can see if a password is set. No-one can read their own or other user's passwords.
         read: ({ authentication }) => authentication.item.isAdmin,
         // 4. Only authenticated users can update their own password. Admins can update anyone's password.
-        update: ({ existingItem, authentication: { item } }) => {
-          return item.isAdmin || existingItem.id === item.id;
-        },
+        // update: ({ existingItem, authentication: { item } }) => {
+        //   return item.isAdmin || existingItem.id === item.id;
+        // },
       },
     },
-    tasks: {
+    list_books: {
       type: Relationship,
-      ref: "Todo.assignee",
+      ref: "Book.hired_by",
+      many: true,
     },
   },
-  // fields: {
-  //   name: {
-  //     type: Text
-  //   },
-  //   email: {
-  //     type: Text,
-  //     isUnique: true,
-  //   },
-  //   isAdmin: { type: Checkbox },
-  //   password: {
-  //     type: Password,
-  //   },
-  //   posts: {
-  //     type: Relationship,
-  //     ref: "Post",
-  //   },
-  //   task: {
-  //     type: Relationship,
-  //     ref: "Todo.assignee",
-  //     many: true,
-  //   },
-  // },
 };

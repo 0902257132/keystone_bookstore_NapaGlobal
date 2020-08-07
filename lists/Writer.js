@@ -7,6 +7,7 @@ const {
 
 module.exports = {
   access: {
+    read: ({ authentication: { item } }) => item.isAdmin,
     update: ({ authentication: { item } }) => item.isAdmin,
     delete: ({ authentication: { item } }) => item.isAdmin,
     create: ({ authentication: { item } }) => item.isAdmin,
@@ -16,34 +17,13 @@ module.exports = {
       type: Text,
       isRequired: true,
     },
-    describe: {
-      type: Text,
-    },
-    category: {
-      type: Text,
-    },
-    author: {
-      type: Relationship,
-      ref: "Writer.composed",
-      many: false,
-    },
-    image: {
-      type: Text,
-    },
-    page_number: {
+    age: {
       type: Integer,
     },
-    number_in_storage: {
-      type: Integer,
-      isRequired: true,
-    },
-    publish_date: {
-      type: CalendarDay,
-    },
-    hired_by: {
+    composed: {
       type: Relationship,
-      ref: "User.list_books",
-      many: false,
+      ref: "Book.author",
+      many: true,
     },
   },
 };
