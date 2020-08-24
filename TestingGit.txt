@@ -1,2 +1,4 @@
-branch master v1
-branch master v3
+local branch master v1
+remote Edited to be v1
+local branch master v2
+
