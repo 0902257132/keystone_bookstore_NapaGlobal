@@ -2,4 +2,4 @@ local branch master v1
 remote Edited to be v1
 local branch master v2
 
-12345
+12345678
